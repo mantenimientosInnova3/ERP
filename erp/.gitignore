@@ -1,0 +1,5 @@
+# Ignorar entornos virtuales
+venv/
+.venv/
+Lib/
+Scripts/
