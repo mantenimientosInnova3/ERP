@@ -17,11 +17,6 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
 
-class CentroCosto(models.Model):
-    nombre = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.nombre
 
 class OrdenCompra(models.Model):
     fecha = models.DateField()
@@ -53,10 +48,23 @@ class DetalleOrden(models.Model):
         return self.nombre
 
 class Requisicion(models.Model):
+    ESTADOS = [
+        ("PENDIENTE", "Pendiente"),
+        ("APROBADA", "Aprobada"),
+        ("RECHAZADA", "Rechazada"),
+    ]
+    
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha = models.DateField(auto_now_add=True)
     descripcion = models.CharField(max_length=200, blank=True)
     area = models.CharField(max_length=100)
+    centro_costo = models.ForeignKey(CentroCosto, on_delete=models.CASCADE, null=True, blank=True)
+    consecutivo = models.CharField(max_length=50, blank=True)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default="PENDIENTE")
+    fecha_autorizacion = models.DateField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"REQ {self.consecutivo or self.id} - {self.usuario.username}"
 
 class DetalleRequisicion(models.Model):
     requisicion = models.ForeignKey(Requisicion, on_delete=models.CASCADE, related_name="detalles")
@@ -64,3 +72,6 @@ class DetalleRequisicion(models.Model):
     cantidad = models.PositiveIntegerField()
     unidad = models.CharField(max_length=20)
     observaciones = models.CharField(max_length=200, blank=True)
+    
+    def __str__(self):
+        return f"{self.producto} x {self.cantidad}"
