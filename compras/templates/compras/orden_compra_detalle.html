@@ -1,0 +1,81 @@
+{% extends "compras/base.html" %}
+{% block title %}Orden de Compra{% endblock %}
+
+{% block content %}
+<div class="container mb-3">
+    <h2 class="text-center">ORDEN DE COMPRA</h2>
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Obra/Área solicitante</th><td>{{ orden.centro_costo }}</td>
+                <th>No. OC</th><td>{{ orden.consecutivo }}</td>
+            </tr>
+            <tr>
+                <th>Proveedor</th><td>{{ orden.proveedor }}</td>
+                <th>Fecha de elaboración</th><td>{{ orden.fecha }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de autorización</th><td>{{ orden.fecha_autorizacion }}</td>
+                <th>Condiciones de pago</th><td>{{ orden.condiciones_pago }}</td>
+            </tr>
+            <tr>
+                <th>Condiciones de entrega</th>
+                <td colspan="3">{{ orden.condiciones_entrega }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Descripción</th>
+                <th>Unidad</th>
+                <th>Cantidad</th>
+                <th>Observaciones</th>
+                <th>Precio unitario</th>
+                <th>Importe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ detalle.producto.nombre }}</td>
+                <td>{{ detalle.unidad }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.observaciones }}</td>
+                <td>${{ detalle.precio_unitario }}</td>
+                <td>${{ detalle.cantidad|floatformat:2|add:detalle.precio_unitario|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Subtotal</th><td>${{ subtotal }}</td>
+                <th>Descuento</th><td>${{ orden.descuento }}</td>
+            </tr>
+            <tr>
+                <th>Anticipos</th><td>${{ orden.anticipo }}</td>
+                <th>IVA</th><td>${{ iva }}</td>
+            </tr>
+            <tr>
+                <th colspan="2">Total</th><td colspan="2"><strong>${{ total }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h5>Observaciones:</h5> <p>{{ orden.observaciones }}</p>
+    <h5>Criterios de aceptación de la compra:</h5> <p>{{ orden.criterios_aceptacion }}</p>
+
+    <div class="row text-center mt-5">
+        <div class="col"><strong>Solicita:</strong><br>__________________<br>(Nombre y Firma)</div>
+        <div class="col"><strong>Aprueba:</strong><br>__________________<br>(Nombre y Firma)</div>
+        <div class="col"><strong>Responsable de compras:</strong><br>__________________<br>(Nombre y Firma)</div>
+    </div>
+</div>
+<button class="btn btn-secondary mt-4" onclick="window.print()">Imprimir</button>
+{% endblock %}

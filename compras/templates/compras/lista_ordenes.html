@@ -1,0 +1,29 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Órdenes de Compra{% endblock %}
+
+{% block content %}
+<h2>Órdenes de Compra</h2>
+<table border="1">
+    <tr>
+        <th>Proveedor</th>
+        <th>Fecha</th>
+        <th>Centro de Costo</th>
+        <th>Detalles</th>
+    </tr>
+    {% for orden in ordenes %}
+    <tr>
+        <td>{{ orden.proveedor }}</td>
+        <td>{{ orden.fecha }}</td>
+        <td>{{ orden.centro_costo }}</td>
+        <td>
+            {% for detalle in orden.detalleorden_set.all %}
+                Producto: {{ detalle.producto }} - Cantidad: {{ detalle.cantidad }}<br>
+            {% endfor %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No hay órdenes registradas.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

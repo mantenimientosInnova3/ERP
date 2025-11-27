@@ -1,0 +1,33 @@
+{% extends "compras/base.html" %}
+{% block title %}Requisiciones pendientes{% endblock %}
+
+{% block content %}
+<h2>Requisiciones pendientes</h2>
+<table border="1">
+    <tr>
+        <th>Folio</th>
+        <th>Usuario</th>
+        <th>Fecha</th>
+        <th>Área</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+    </tr>
+    {% for requisicion in requisiciones %}
+    <tr>
+        <td>{{ requisicion.id }}</td>
+        <td>{{ requisicion.usuario }}</td>
+        <td>{{ requisicion.fecha }}</td>
+        <td>{{ requisicion.area }}</td>
+        <td>{{ requisicion.descripcion }}</td>
+        <td>
+            <!-- Ejemplo de acción: -->
+            <a href="{% url 'generar_orden_de_requisicion' requisicion.id %}">Generar Orden</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">No hay requisiciones pendientes.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

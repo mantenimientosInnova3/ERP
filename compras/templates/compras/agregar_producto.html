@@ -1,0 +1,13 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Agregar Producto{% endblock %}
+
+{% block content %}
+<h2>Agregar producto</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar</button>
+</form>
+<a href="{% url 'lista_productos' %}">Volver a la lista de productos</a>
+{% endblock %}

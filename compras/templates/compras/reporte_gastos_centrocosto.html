@@ -1,0 +1,73 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Reporte de Gastos por Centro de Costo{% endblock %}
+
+{% block content %}
+<h2>Reporte de gastos por centro de costo</h2>
+
+<form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-auto">
+        <label for="fecha_inicio" class="form-label mb-0">Desde:</label>
+        <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+    </div>
+    <div class="col-auto">
+        <label for="fecha_fin" class="form-label mb-0">Hasta:</label>
+        <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+    </div>
+    <div class="col-auto">
+        <label for="centro_costo" class="form-label mb-0">Centro de Costo:</label>
+        <select name="centro_costo" id="centro_costo" class="form-select">
+            <option value="">Todos</option>
+            {% for cc in centros_costo %}
+                <option value="{{ cc.id }}"{% if cc.id|stringformat:"s" == request.GET.centro_costo %} selected{% endif %}>{{ cc }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    <a href="{% url 'exportar_reporte_excel' %}" class="btn btn-success me-2">Exportar a Excel</a>
+    <a href="{% url 'exportar_reporte_pdf' %}" class="btn btn-danger">Exportar a PDF</a>
+</div>
+
+{% for cc in cc_data %}
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            Centro de Costo: {{ cc.centro_costo }}
+        </div>
+        <div class="card-body">
+            {% if cc.detalles %}
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Gasto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for det in cc.detalles %}
+                    <tr>
+                        <td>{{ det.producto }}</td>
+                        <td>{{ det.cantidad }}</td>
+                        <td>${{ det.precio }}</td>
+                        <td>${{ det.gasto|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No hay productos para este centro de costo.</p>
+            {% endif %}
+            <strong>Total gastado en {{ cc.centro_costo }}: ${{ cc.total_gasto|floatformat:2 }}</strong>
+        </div>
+    </div>
+{% endfor %}
+
+<h3 class="text-primary">Total general: ${{ total_general|floatformat:2 }}</h3>
+
+{% endblock %}

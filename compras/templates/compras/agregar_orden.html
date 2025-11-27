@@ -1,0 +1,14 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Agregar Orden de Compra{% endblock %}
+
+{% block content %}
+<h2>Agregar nueva orden de compra</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ orden_form.as_p }}
+    {{ detalle_form.as_p }}
+    <button type="submit">Guardar orden</button>
+</form>
+<a href="{% url 'lista_ordenes' %}">Volver a las órdenes</a>
+{% endblock %}

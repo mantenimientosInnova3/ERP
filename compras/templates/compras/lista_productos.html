@@ -1,0 +1,31 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Lista de Productos{% endblock %}
+
+{% block content %}
+<h2>Listado de productos</h2>
+<a href="{% url 'agregar_producto' %}">Agregar nuevo producto</a>
+<table border="1">
+    <tr>
+        <th>Nombre</th>
+        <th>SKU</th>
+        <th>Cantidad</th>
+        <th>Precio</th>
+        <th>Acciones</th>
+    </tr>
+    {% for producto in productos %}
+    <tr>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.sku }}</td>
+        <td>{{ producto.cantidad }}</td>
+        <td>{{ producto.precio }}</td>
+        <td>
+            <a href="{% url 'editar_producto' producto.id %}">Editar</a> |
+            <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No hay productos registrados.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

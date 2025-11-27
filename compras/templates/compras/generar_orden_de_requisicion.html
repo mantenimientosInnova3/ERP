@@ -1,0 +1,44 @@
+{% extends "compras/base.html" %}
+{% block title %}Generar Orden de Compra{% endblock %}
+
+{% block content %}
+<h2>Generar Orden de Compra para la Requisición #{{ requisicion.id }}</h2>
+
+<h3>Datos de la requisición</h3>
+<ul>
+    <li>Usuario: {{ requisicion.usuario }}</li>
+    <li>Fecha: {{ requisicion.fecha }}</li>
+    <li>Área: {{ requisicion.area }}</li>
+    <li>Descripción: {{ requisicion.descripcion }}</li>
+</ul>
+
+<h4>Partidas de la requisición:</h4>
+<table border="1">
+  <tr>
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Unidad</th>
+    <th>Observaciones</th>
+  </tr>
+  {% for detalle in detalles %}
+  <tr>
+    <td>{{ detalle.producto }}</td>
+    <td>{{ detalle.cantidad }}</td>
+    <td>{{ detalle.unidad }}</td>
+    <td>{{ detalle.observaciones }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="4">Sin partidas</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3>Llenar datos para la orden de compra</h3>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Generar orden de compra</button>
+</form>
+
+{% endblock %}

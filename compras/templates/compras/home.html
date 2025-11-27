@@ -1,0 +1,86 @@
+{% extends 'compras/base.html' %}
+{% load static %}
+
+{% block title %}Inicio Sistema de Compras{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <img src="/static/logo.jpg" alt="Logo Empresa" width="150"/>
+        <h2>Bienvenido al Sistema de Compras</h2>
+        <h4>Hola {{ usuario.get_full_name|default:usuario.username }}, tu rol: 
+            {% for group in usuario.groups.all %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </h4>
+    </div>
+
+    <div class="row mb-5">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h5>Productos registrados</h5>
+                <h2>{{ total_productos }}</h2>
+                <a href="{% url 'lista_productos' %}" class="btn btn-primary">Ver productos</a>
+            </div>
+        </div>
+    </div>
+
+    {% if es_admin or es_compras %}
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Órdenes de compra</h5>
+                    <h2>{{ total_ordenes }}</h2>
+                    <a href="{% url 'lista_ordenes' %}" class="btn btn-success">Ver órdenes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Nueva orden</h5>
+                    <a href="{% url 'agregar_orden' %}" class="btn btn-warning">Crear orden de compra</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Nueva requisición</h5>
+                    <a href="{% url 'crear_requisicion' %}" class="btn btn-warning">Crear requisición</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+ {% if es_admin or es_compras %}
+    <h3>Últimas órdenes registradas</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Folio</th>
+                <th>Proveedor</th>
+                <th>Fecha</th>
+                <th>Centro de costo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in ultimas_ordenes %}
+            <tr>
+                <td>{{ orden.consecutivo }}</td>
+                <td>{{ orden.proveedor }}</td>
+                <td>{{ orden.fecha }}</td>
+                <td>{{ orden.centro_costo }}</td>
+                <td><a href="{% url 'detalle_orden' orden.id %}" class="btn btn-outline-primary btn-sm">Ver</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hay órdenes registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+</div>
+{% endblock %}

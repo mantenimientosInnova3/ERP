@@ -1,0 +1,21 @@
+{% extends "compras/base.html" %}
+{% block title %}Crear Requisición{% endblock %}
+{% block content %}
+<h2>Crear requisición de compra</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {{ formset.management_form }}
+    <table>
+        {% for form_detail in formset %}
+        <tr>
+            <td>{{ form_detail.producto }}</td>
+            <td>{{ form_detail.cantidad }}</td>
+            <td>{{ form_detail.unidad }}</td>
+            <td>{{ form_detail.observaciones }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <button type="submit">Enviar requisición</button>
+</form>
+{% endblock %}

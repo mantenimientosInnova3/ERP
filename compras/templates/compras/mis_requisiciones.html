@@ -1,0 +1,33 @@
+{% extends "compras/base.html" %}
+{% block title %}Mis Requisiciones{% endblock %}
+
+{% block content %}
+<h2>Mis Requisiciones</h2>
+
+<a href="{% url 'crear_requisicion' %}" class="btn btn-primary mb-3">Crear nueva requisición</a>
+
+<table border="1">
+    <tr>
+        <th>Folio</th>
+        <th>Fecha</th>
+        <th>Área</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+    </tr>
+    {% for requisicion in requisiciones %}
+    <tr>
+        <td>{{ requisicion.id }}</td>
+        <td>{{ requisicion.fecha }}</td>
+        <td>{{ requisicion.area }}</td>
+        <td>{{ requisicion.descripcion }}</td>
+        <td>
+            <!-- Puedes agregar aquí un botón para ver detalle de requisición -->
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">Aún no tienes requisiciones registradas.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
