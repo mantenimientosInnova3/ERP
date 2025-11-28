@@ -1,27 +1,38 @@
 {% extends "compras/base.html" %}
-{% block title %}Requisiciones pendientes{% endblock %}
+
+{% block title %}Requisiciones Pendientes{% endblock %}
 
 {% block content %}
-<h2>Requisiciones pendientes</h2>
+<h2>Requisiciones pendientes de autorización</h2>
+
 <table border="1">
     <tr>
-        <th>Folio</th>
+        <th>Consecutivo</th>
         <th>Usuario</th>
         <th>Fecha</th>
         <th>Área</th>
-        <th>Descripción</th>
+        <th>Centro de costo</th>
+        <th>Estado</th>
         <th>Acciones</th>
     </tr>
-    {% for requisicion in requisiciones %}
+    {% for req in requisiciones %}
     <tr>
-        <td>{{ requisicion.id }}</td>
-        <td>{{ requisicion.usuario }}</td>
-        <td>{{ requisicion.fecha }}</td>
-        <td>{{ requisicion.area }}</td>
-        <td>{{ requisicion.descripcion }}</td>
+        <td>{{ req.consecutivo }}</td>
+        <td>{{ req.usuario.username }}</td>
+        <td>{{ req.fecha }}</td>
+        <td>{{ req.area }}</td>
+        <td>{{ req.centro_costo }}</td>
+        <td>{{ req.get_estado_display }}</td>
         <td>
-            <!-- Ejemplo de acción: -->
-            <a href="{% url 'generar_orden_de_requisicion' requisicion.id %}">Generar Orden</a>
+            <a href="{% url 'detalle_requisicion' req.id %}">Ver</a>
+            {% if req.estado == "PENDIENTE" %}
+                <a href="{% url 'aprobar_requisicion' req.id %}">Aprobar</a> |
+                <a href="{% url 'rechazar_requisicion' req.id %}">Rechazar</a>
+            {% elif req.estado == "APROBADA" %}
+                <a href="{% url 'generar_orden_de_requisicion' req.id %}">Generar OC</a>
+            {% else %}
+                -
+            {% endif %}
         </td>
     </tr>
     {% empty %}

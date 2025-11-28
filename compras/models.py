@@ -68,7 +68,7 @@ class Requisicion(models.Model):
 
 class DetalleRequisicion(models.Model):
     requisicion = models.ForeignKey(Requisicion, on_delete=models.CASCADE, related_name="detalles")
-    producto = models.CharField(max_length=100)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     cantidad = models.PositiveIntegerField()
     unidad = models.CharField(max_length=20)
     observaciones = models.CharField(max_length=200, blank=True)

@@ -1,18 +1,17 @@
 {% extends "compras/base.html" %}
 
-{% block title %}Generar OC desde Requisición{% endblock %}
+{% block title %}Detalle Requisición{% endblock %}
 
 {% block content %}
-<h2>Generar orden de compra desde requisición {{ requisicion.consecutivo }}</h2>
+<h2>Requisición {{ requisicion.consecutivo }}</h2>
 
-<h3>Datos de la requisición</h3>
 <p><strong>Usuario:</strong> {{ requisicion.usuario.username }}</p>
 <p><strong>Fecha:</strong> {{ requisicion.fecha }}</p>
 <p><strong>Área:</strong> {{ requisicion.area }}</p>
 <p><strong>Centro de costo:</strong> {{ requisicion.centro_costo }}</p>
 <p><strong>Estado:</strong> {{ requisicion.get_estado_display }}</p>
 
-<h3>Partidas solicitadas</h3>
+<h3>Partidas</h3>
 <table border="1">
     <tr>
         <th>Producto / servicio</th>
@@ -29,17 +28,10 @@
     </tr>
     {% empty %}
     <tr>
-        <td colspan="4">Sin partidas.</td>
+        <td colspan="4">Sin partidas capturadas.</td>
     </tr>
     {% endfor %}
 </table>
 
-<h3>Datos de la orden de compra</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Generar orden de compra</button>
-</form>
-
-<a href="{% url 'requisiciones_pendientes' %}">Volver</a>
+<a href="{% url 'mis_requisiciones' %}">Volver</a>
 {% endblock %}

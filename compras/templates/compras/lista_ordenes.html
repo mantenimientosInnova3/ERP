@@ -6,13 +6,16 @@
 <h2>Órdenes de Compra</h2>
 <table border="1">
     <tr>
+        <th>ID</th>
         <th>Proveedor</th>
         <th>Fecha</th>
         <th>Centro de Costo</th>
         <th>Detalles</th>
+        <th>Acciones</th>
     </tr>
     {% for orden in ordenes %}
     <tr>
+        <td>{{ oc.id}}</td>
         <td>{{ orden.proveedor }}</td>
         <td>{{ orden.fecha }}</td>
         <td>{{ orden.centro_costo }}</td>
@@ -21,6 +24,9 @@
                 Producto: {{ detalle.producto }} - Cantidad: {{ detalle.cantidad }}<br>
             {% endfor %}
         </td>
+        <th>
+            # espacio para acciones
+        </th>
     </tr>
     {% empty %}
     <tr><td colspan="4">No hay órdenes registradas.</td></tr>

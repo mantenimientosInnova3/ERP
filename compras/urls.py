@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 from django.http import HttpResponse
 
+def home(request):
+    return render(request, "compras/home.html")
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('productos/', views.lista_productos, name='lista_productos'),
@@ -17,5 +20,14 @@ urlpatterns = [
     path('requisiciones/crear/', views.crear_requisicion, name='crear_requisicion'),
     path('requisiciones/mis/', views.mis_requisiciones, name='mis_requisiciones'),
     path('requisiciones/pendientes/', views.requisiciones_pendientes, name='requisiciones_pendientes'),
-    path('requisiciones/ordenar/<int:id>/', views.generar_orden_de_requisicion, name='generar_orden_de_requisicion'), 
+    path('requisiciones/ordenar/<int:id>/', views.generar_orden_de_requisicion, name='generar_orden_de_requisicion'),
+    path('requisiciones/crear/', views.crear_requisicion, name='crear_requisicion'),
+    path('requisiciones/pendientes/', views.requisiciones_pendientes, name='requisiciones_pendientes'),
+    path('requisiciones/aprobar/<int:id>/', views.aprobar_requisicion, name='aprobar_requisicion'),
+    path('requisiciones/rechazar/<int:id>/', views.rechazar_requisicion, name='rechazar_requisicion'),
+    path('requisiciones/detalle/<int:id>/', views.detalle_requisicion, name='detalle_requisicion'),
+    path('requisiciones/generar-oc/<int:id>/',
+    views.generar_orden_de_requisicion,
+    name='generar_orden_de_requisicion')
+    
 ]

@@ -8,20 +8,37 @@
 
 <table border="1">
     <tr>
+        <th>Consecutivo</th>
         <th>Folio</th>
         <th>Fecha</th>
         <th>Área</th>
+        <th>Centro de costo</th>
         <th>Descripción</th>
+        <th>Estado</th>
         <th>Acciones</th>
+
     </tr>
-    {% for requisicion in requisiciones %}
+    {% for req in requisiciones %}
     <tr>
+        <td>{{ req.consecutivo }}</td>
         <td>{{ requisicion.id }}</td>
         <td>{{ requisicion.fecha }}</td>
         <td>{{ requisicion.area }}</td>
+        <td>{{ req.centro_costo }}</td>
         <td>{{ requisicion.descripcion }}</td>
+        <td>{{ req.get_estado_display}}</td>
         <td>
-            <!-- Puedes agregar aquí un botón para ver detalle de requisición -->
+            {% if req.estado == "PENDIENTE" %}
+                <!-- Más adelante podrías permitir editar/cancelar -->
+                Pendiente
+            {% elif req.estado == "APROBADA" %}
+                Aprobada
+            {% elif req.estado == "RECHAZADA" %}
+                Rechazada
+            <a href="{% url 'detalle_requisicion' req.id %}">Ver</a>
+            {% else %}
+                —
+            {% endif %}
         </td>
     </tr>
     {% empty %}

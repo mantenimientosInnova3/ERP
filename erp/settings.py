@@ -64,15 +64,11 @@ MIDDLEWARE = [
 ]
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "saticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    os.path.join(BASE_DIR, "static")
 ]
 # Agrega esto solo si tienes la carpeta static en la raíz del proyecto:
-import os
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
 
 ROOT_URLCONF = 'erp.urls'
 

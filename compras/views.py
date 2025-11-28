@@ -1,6 +1,6 @@
 
 # compras/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProductoForm
 from .models import OrdenCompra, DetalleOrden, Producto
 from .forms import OrdenCompraForm, DetalleOrdenForm
@@ -12,33 +12,46 @@ from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
 from .models import OrdenCompra, DetalleOrden
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import RequisicionForm, DetalleRequisicionFormSet
+from .forms import RequisicionForm, DetalleRequisicionForm
 from .models import Requisicion, DetalleRequisicion, OrdenCompra, DetalleOrden
-from .forms import OrdenCompraForm
 from django.contrib import messages
+from django.utils import timezone
+
+def es_compras(user):
+    return user.is_staff
+
+def es_admin(user):
+    return user.is_superuser  # opcional, si usas superusuario como admin
 
 @login_required
 def crear_requisicion(request):
-    if request.method == 'POST':
-        form = RequisicionForm(request.POST)
-        formset = DetalleRequisicionFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
-            requisicion = form.save(commit=False)
+    if request.method == "POST":
+        req_form = RequisicionForm(request.POST)
+        det_form = DetalleRequisicionForm(request.POST)
+        if req_form.is_valid() and det_form.is_valid():
+            requisicion = req_form.save(commit=False)
             requisicion.usuario = request.user
             requisicion.save()
-            detalles = formset.save(commit=False)
-            for det in detalles:
-                det.requisicion = requisicion
-                det.save()
+            requisicion.consecutivo = f"{request.user.username.upper()}-{requisicion.id:03d}"
+            requisicion.save()
+
+            detalle = det_form.save(commit=False)
+            detalle.requisicion = requisicion
+            detalle.save()
+
             return redirect('mis_requisiciones')
     else:
-        form = RequisicionForm()
-        formset = DetalleRequisicionFormSet()
-    return render(request, 'compras/crear_requisicion.html', {'form': form, 'formset': formset})
+        req_form = RequisicionForm()
+        det_form = DetalleRequisicionForm()
+
+    return render(request, 'compras/crear_requisicion.html', {
+        'req_form': req_form,
+        'det_form': det_form,
+    })
+
 
 
 @login_required
@@ -60,16 +73,44 @@ def home(request):
         'ultimas_ordenes': ultimas_ordenes,
     })
 
-def home(request):
-    return render(request, 'compras/home.html', {
-        'mensaje': '¡Probando la portada nueva!',
-        'usuario': request.user
-    })
 
 @login_required
 def mis_requisiciones(request):
     requisiciones = Requisicion.objects.filter(usuario=request.user).order_by('-fecha')
     return render(request, 'compras/mis_requisiciones.html', {'requisiciones': requisiciones})
+
+@login_required
+@user_passes_test(es_compras)
+def generar_orden_de_requisicion(request, id):
+    requisicion = get_object_or_404(Requisicion, id=id, estado="APROBADA")
+    detalles = requisicion.detalles.all()
+
+    if request.method == "POST":
+        form = OrdenCompraForm(request.POST)
+        if form.is_valid():
+            orden = form.save()
+
+            for partida in detalles:
+                DetalleOrden.objects.create(
+                    orden=orden,
+                    producto=partida.producto,       # ahora es FK a Producto
+                    unidad=partida.unidad,
+                    cantidad=partida.cantidad,
+                    observaciones=partida.observaciones,
+                    precio_unitario=0
+                )
+
+            messages.success(request, "Orden de compra generada con éxito.")
+            return redirect('lista_ordenes')
+    else:
+        form = OrdenCompraForm()
+
+    return render(request, 'compras/generar_orden_de_requisicion.html', {
+        'requisicion': requisicion,
+        'detalles': detalles,
+        'form': form,
+    })
+
 
 def exportar_reporte_pdf(request):
     cc_data = []
@@ -187,8 +228,11 @@ def agregar_orden_compra(request):
         'orden_form': orden_form,
         'detalle_form': detalle_form
     }) 
+    
+@login_required
+@user_passes_test(es_compras)
 def lista_ordenes(request):
-    ordenes = OrdenCompra.objects.all()
+    ordenes = OrdenCompra.objects.all().order_by('-fecha')
     return render(request, 'compras/lista_ordenes.html', {'ordenes': ordenes})
 
 def reporte_gastos_centrocosto(request):
@@ -252,30 +296,43 @@ def es_compras(user):
 @user_passes_test(es_compras)
 def requisiciones_pendientes(request):
     # Aquí puedes filtrar por estatus, área, etc. según tu lógica.
-    requisiciones = Requisicion.objects.all().order_by('-fecha')
+    requisiciones = Requisicion.objects.filterl(estado="PENDIENTE").order_by('fecha')
     return render(request, 'compras/requisiciones_pendientes.html', {'requisiciones': requisiciones})
 
-def generar_orden_de_requisicion(request, id):
+
+@login_required
+@user_passes_test(es_compras)
+def requisiciones_pendientes(request):
+    requisiciones = Requisicion.objects.filter(estado="PENDIENTE").order_by('-fecha')
+    return render(request, 'compras/requisiciones_pendientes.html', {'requisiciones': requisiciones})
+
+
+@login_required
+@user_passes_test(es_compras)
+def aprobar_requisicion(request, id):
     requisicion = get_object_or_404(Requisicion, id=id)
-    detalles = requisicion.detallerequisicion_set.all()
-    
-    if request.method == "POST":
-        form = OrdenCompraForm(request.POST)
-        if form.is_valid():
-            orden = form.save()
-            # Copiamos los detalles de la requisición a la orden de compra
-            for partida in detalles:
-                DetalleOrden.objects.create(
-                    orden=orden,
-                    producto=partida.producto,  # Usa ForeignKey si corresponde
-                    cantidad=partida.cantidad
-                )
-            messages.success(request, "Orden de compra generada con éxito")
-            return redirect('lista_ordenes')
-    else:
-        form = OrdenCompraForm()
-    return render(request, 'compras/generar_orden_de_requisicion.html', {
+    requisicion.estado = "APROBADA"
+    requisicion.fecha_autorizacion = timezone.now().date()
+    requisicion.save()
+    messages.success(request, "Requisición aprobada.")
+    return redirect('requisiciones_pendientes')
+
+
+@login_required
+@user_passes_test(es_compras)
+def rechazar_requisicion(request, id):
+    requisicion = get_object_or_404(Requisicion, id=id)
+    requisicion.estado = "RECHAZADA"
+    requisicion.fecha_autorizacion = timezone.now().date()
+    requisicion.save()
+    messages.warning(request, "Requisición rechazada.")
+    return redirect('requisiciones_pendientes')
+
+@login_required
+def detalle_requisicion(request, id):
+    requisicion = get_object_or_404(Requisicion, id=id)
+    detalles = requisicion.detalles.all()  # related_name="detalles"
+    return render(request, 'compras/detalle_requisicion.html', {
         'requisicion': requisicion,
         'detalles': detalles,
-        'form': form
     })

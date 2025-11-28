@@ -18,9 +18,10 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'mis_requisiciones' %}">Mis Requisiciones</a></li>
 
                     {% if es_admin or es_compras %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'requisiciones_pendientes' %}">Reqs. Pendientes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'requisiciones_pendientes' %}">Requisiciones Pendientes</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'lista_ordenes' %}">Órdenes de compra</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'reporte_gastos_centrocosto' %}">Reporte Gastos x CC</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'lista_productos' %}">Ordenes de compra</a></li>
                     {% endif %}
 
                     <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>

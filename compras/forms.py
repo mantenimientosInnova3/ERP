@@ -9,15 +9,13 @@ from .models import Requisicion
 class RequisicionForm(forms.ModelForm):
     class Meta:
         model = Requisicion
-        fields = ['descripcion', 'area']
+        fields = ['descripcion', 'area', 'centro_costo']
 
-DetalleRequisicionFormSet = inlineformset_factory(
-    Requisicion,
-    DetalleRequisicion,
-    fields=['producto', 'cantidad', 'unidad', 'observaciones'],
-    extra=1,
-    can_delete=False
-)
+class DetalleRequisicionForm(forms.ModelForm):
+    class Meta:
+        model = DetalleRequisicion
+        fields = ['producto', 'cantidad', 'unidad', 'observaciones']
+
 
 class ProductoForm(forms.ModelForm):
     class Meta:
