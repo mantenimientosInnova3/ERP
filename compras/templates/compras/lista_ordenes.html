@@ -15,7 +15,7 @@
     </tr>
     {% for orden in ordenes %}
     <tr>
-        <td>{{ oc.id}}</td>
+        <td>{{ orden.id }}</td>
         <td>{{ orden.proveedor }}</td>
         <td>{{ orden.fecha }}</td>
         <td>{{ orden.centro_costo }}</td>
@@ -24,12 +24,23 @@
                 Producto: {{ detalle.producto }} - Cantidad: {{ detalle.cantidad }}<br>
             {% endfor %}
         </td>
-        <th>
-            # espacio para acciones
-        </th>
+        <td>
+            {% if orden.id and orden.estado != "RECIBIDA" %}
+                <form method="post" action="{% url 'recibir_orden' orden.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">
+                        Marcar como recibida
+                    </button>
+                </form>
+            {% elif orden.id %}
+                Recibida
+            {% else %}
+                —
+            {% endif %}
+        </td>
     </tr>
     {% empty %}
-    <tr><td colspan="4">No hay órdenes registradas.</td></tr>
+    <tr><td colspan="6">No hay órdenes registradas.</td></tr>
     {% endfor %}
 </table>
 {% endblock %}

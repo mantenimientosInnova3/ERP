@@ -19,6 +19,12 @@ class Producto(models.Model):
 
 
 class OrdenCompra(models.Model):
+    ESTADOS_OC = [
+        ("PENDIENTE", "Pendiente"),
+        ("RECIBIDA", "Recibida"),
+    ]
+
+    
     fecha = models.DateField()
     proveedor = models.CharField(max_length=100)
     centro_costo = models.ForeignKey('CentroCosto', on_delete=models.CASCADE)
@@ -32,8 +38,15 @@ class OrdenCompra(models.Model):
     descuento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     anticipo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADOS_OC,
+        default="PENDIENTE",
+    )
+
     def __str__(self):
-        return self.nombre
+        return f"OC {self.id} - {self.proveedor}"
+
 
 class DetalleOrden(models.Model):
     orden = models.ForeignKey(OrdenCompra, on_delete=models.CASCADE)
@@ -75,3 +88,4 @@ class DetalleRequisicion(models.Model):
     
     def __str__(self):
         return f"{self.producto} x {self.cantidad}"
+    

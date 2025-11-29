@@ -99,6 +99,11 @@ def generar_orden_de_requisicion(request, id):
                     observaciones=partida.observaciones,
                     precio_unitario=0
                 )
+                
+                # Esto es para actualizar inventario al momento de generar la orden
+                producto =detalle.producto
+                producto.cantidad += detalle.cantidad
+                producto.save()
 
             messages.success(request, "Orden de compra generada con éxito.")
             return redirect('lista_ordenes')
@@ -336,3 +341,23 @@ def detalle_requisicion(request, id):
         'requisicion': requisicion,
         'detalles': detalles,
     })
+    
+    
+@login_required
+@user_passes_test(es_compras)
+def recibir_orden(request, id):
+    orden = get_object_or_404(OrdenCompra, id=id)
+
+    if request.method == "POST":
+        # Solo si aún no estaba recibida
+        if orden.estado != "RECIBIDA":
+            for det in orden.detalleorden_set.all():
+                producto = det.producto
+                producto.cantidad += det.cantidad
+                producto.save()
+            orden.estado = "RECIBIDA"
+            orden.save()
+            messages.success(request, "Orden recibida y stock actualizado.")
+        return redirect('lista_ordenes')
+
+    return render(request, "compras/recibir_orden.html", {"orden": orden})

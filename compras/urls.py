@@ -28,6 +28,7 @@ urlpatterns = [
     path('requisiciones/detalle/<int:id>/', views.detalle_requisicion, name='detalle_requisicion'),
     path('requisiciones/generar-oc/<int:id>/',
     views.generar_orden_de_requisicion,
-    name='generar_orden_de_requisicion')
+    name='generar_orden_de_requisicion'),
+    path('ordenes/recibir/<int:id>/', views.recibir_orden, name='recibir_orden'),
     
 ]

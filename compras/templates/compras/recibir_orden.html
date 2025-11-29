@@ -1,0 +1,37 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Recibir orden{% endblock %}
+
+{% block content %}
+<h2>Recibir orden de compra {{ orden.id }}</h2>
+
+<p><strong>Proveedor:</strong> {{ orden.proveedor }}</p>
+<p><strong>Fecha:</strong> {{ orden.fecha }}</p>
+<p><strong>Estado actual:</strong> {{ orden.estado }}</p>
+
+<h3>Partidas</h3>
+<table class="table table-bordered">
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+    </tr>
+    {% for det in orden.detalleorden_set.all %}
+    <tr>
+        <td>{{ det.producto }}</td>
+        <td>{{ det.cantidad }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<form method="post">
+    {% csrf_token %}
+    {% if orden.estado != "RECIBIDA" %}
+        <button type="submit" class="btn btn-success">
+            Confirmar recepción y actualizar inventario
+        </button>
+    {% else %}
+        <p>Esta orden ya fue marcada como RECIBIDA.</p>
+    {% endif %}
+    <a href="{% url 'lista_ordenes' %}" class="btn btn-secondary">Volver</a>
+</form>
+{% endblock %}
