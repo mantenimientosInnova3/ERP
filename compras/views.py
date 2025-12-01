@@ -19,6 +19,7 @@ from .forms import RequisicionForm, DetalleRequisicionForm
 from .models import Requisicion, DetalleRequisicion, OrdenCompra, DetalleOrden
 from django.contrib import messages
 from django.utils import timezone
+from .models import MovimientoInventario
 
 def es_compras(user):
     return user.is_staff
@@ -353,11 +354,31 @@ def recibir_orden(request, id):
         if orden.estado != "RECIBIDA":
             for det in orden.detalleorden_set.all():
                 producto = det.producto
+                existencia_antes = producto.cantidad
                 producto.cantidad += det.cantidad
                 producto.save()
+                
+                MovimientoInventario.objects.create(
+                    producto=producto,
+                    orden_compra=orden,
+                    tipo="ENTRADA_OC",
+                    cantidad=det.cantidad,
+                    existencia_antes=existencia_antes,
+                    existencia_despues=producto.cantidad,
+                )
             orden.estado = "RECIBIDA"
             orden.save()
             messages.success(request, "Orden recibida y stock actualizado.")
         return redirect('lista_ordenes')
 
     return render(request, "compras/recibir_orden.html", {"orden": orden})
+
+@login_required
+def movimientos_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    movimientos = producto.movimientos.order_by('-fecha')
+    return render(request, "compras/movimientos_producto.html", {
+        "producto": producto,
+        "movimientos": movimientos,
+    })
+

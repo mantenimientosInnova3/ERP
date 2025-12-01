@@ -89,3 +89,19 @@ class DetalleRequisicion(models.Model):
     def __str__(self):
         return f"{self.producto} x {self.cantidad}"
     
+class MovimientoInventario(models.Model):
+    TIPO_MOVIMIENTO = [
+        ("ENTRADA_OC", "Entrada por Orden de Compra"),
+    ]
+
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="movimientos")
+    orden_compra = models.ForeignKey(OrdenCompra, on_delete=models.CASCADE, blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    tipo = models.CharField(max_length=20, choices=TIPO_MOVIMIENTO)
+    cantidad = models.IntegerField()
+    existencia_antes = models.IntegerField()
+    existencia_despues = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.tipo} - {self.producto} x {self.cantidad} en {self.fecha}"
+

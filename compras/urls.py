@@ -30,5 +30,6 @@ urlpatterns = [
     views.generar_orden_de_requisicion,
     name='generar_orden_de_requisicion'),
     path('ordenes/recibir/<int:id>/', views.recibir_orden, name='recibir_orden'),
-    
+    path('productos/<int:id>/movimientos/', views.movimientos_producto, name='movimientos_producto'),
+
 ]

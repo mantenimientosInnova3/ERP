@@ -1,0 +1,29 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Movimientos de {{ producto.nombre }}{% endblock %}
+
+{% block content %}
+<h2>Movimientos de {{ producto.nombre }}</h2>
+<table border="1">
+    <tr>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Antes</th>
+        <th>Después</th>
+        <th>OC</th>
+    </tr>
+    {% for mov in movimientos %}
+    <tr>
+        <td>{{ mov.fecha }}</td>
+        <td>{{ mov.get_tipo_display }}</td>
+        <td>{{ mov.cantidad }}</td>
+        <td>{{ mov.existencia_antes }}</td>
+        <td>{{ mov.existencia_despues }}</td>
+        <td>{% if mov.orden_compra %}{{ mov.orden_compra.consecutivo }}{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Sin movimientos registrados.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
