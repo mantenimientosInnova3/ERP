@@ -4,12 +4,38 @@
 
 {% block content %}
 <h2>Órdenes de Compra</h2>
+
+<form method="get" class="mb-3">
+    Proveedor:
+    <input type="text" name="proveedor" value="{{ f_proveedor }}">
+
+    Estado:
+    <select name="estado">
+        <option value="">-- Todos --</option>
+        <option value="PENDIENTE" {% if f_estado == "PENDIENTE" %}selected{% endif %}>Pendiente</option>
+        <option value="RECIBIDA" {% if f_estado == "RECIBIDA" %}selected{% endif %}>Recibida</option>
+    </select>
+
+    Centro de costo:
+    <input type="text" name="centro_costo" value="{{ f_centro_costo }}">
+
+    Fecha desde:
+    <input type="date" name="fecha_desde" value="{{ f_fecha_desde }}">
+
+    Fecha hasta:
+    <input type="date" name="fecha_hasta" value="{{ f_fecha_hasta }}">
+
+    <button type="submit">Filtrar</button>
+    <a href="{% url 'lista_ordenes' %}">Limpiar</a>
+</form>
+
 <table border="1">
     <tr>
         <th>ID</th>
         <th>Proveedor</th>
         <th>Fecha</th>
         <th>Centro de Costo</th>
+        <th>Estado</th>
         <th>Detalles</th>
         <th>Acciones</th>
     </tr>
@@ -19,6 +45,7 @@
         <td>{{ orden.proveedor }}</td>
         <td>{{ orden.fecha }}</td>
         <td>{{ orden.centro_costo }}</td>
+        </td>{{orden.estado}}</td>
         <td>
             {% for detalle in orden.detalleorden_set.all %}
                 Producto: {{ detalle.producto }} - Cantidad: {{ detalle.cantidad }}<br>

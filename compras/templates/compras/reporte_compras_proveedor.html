@@ -1,0 +1,31 @@
+{% extends "compras/base.html" %}
+
+{% block title %}Reporte de compras por proveedor{% endblock %}
+
+{% block content %}
+<h2>Reporte de compras por proveedor</h2>
+
+<form method="get" class="mb-3">
+    Fecha desde:
+    <input type="date" name="fecha_desde" value="{{ f_fecha_desde }}">
+    Fecha hasta:
+    <input type="date" name="fecha_hasta" value="{{ f_fecha_hasta }}">
+    <button type="submit">Filtrar</button>
+    <a href="{% url 'reporte_compras_proveedor' %}">Limpiar</a>
+</form>
+
+<table border="1">
+    <tr>
+        <th>Proveedor</th>
+        <th>Total comprado</th>
+    </tr>
+    {% for fila in resumen %}
+    <tr>
+        <td>{{ fila.orden__proveedor }}</td>
+        <td>{{ fila.total_comprado }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="2">No hay datos para el rango seleccionado.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

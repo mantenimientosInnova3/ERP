@@ -31,5 +31,7 @@ urlpatterns = [
     name='generar_orden_de_requisicion'),
     path('ordenes/recibir/<int:id>/', views.recibir_orden, name='recibir_orden'),
     path('productos/<int:id>/movimientos/', views.movimientos_producto, name='movimientos_producto'),
+    path('reportes/compras-proveedor/', views.reporte_compras_proveedor, name='reporte_compras_proveedor'),
+    
 
 ]

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import F, DecimalField, ExpressionWrapper
 
 class CentroCosto(models.Model):
     nombre = models.CharField(max_length=100)
@@ -49,13 +50,16 @@ class OrdenCompra(models.Model):
 
 
 class DetalleOrden(models.Model):
-    orden = models.ForeignKey(OrdenCompra, on_delete=models.CASCADE)
+    orden = models.ForeignKey(OrdenCompra, on_delete=models.CASCADE, related_name='detalles')
     producto = models.ForeignKey('Producto', on_delete=models.CASCADE)
     unidad = models.CharField(max_length=20)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2)
     observaciones = models.CharField(max_length=200, blank=True)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    
+    @property
+    def importe(self):
+        return self.cantidad * self.precio_unitario
     
     def __str__(self):
         return self.nombre
