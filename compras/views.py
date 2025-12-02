@@ -127,6 +127,16 @@ def generar_orden_de_requisicion(request, id):
 @user_passes_test(es_compras)
 def exportar_reporte_pdf(request):
     
+    logo_path = os.path.join(settings.STATIC_ROOT, 'logo.jpg')
+    if os.path.exists(logo_path):
+        logo_url = os.path.join(settings.STATIC_URL, 'logo.jpg')
+    else:
+        logo_url = None
+    
+    context = {
+        'logo_url': logo_url,
+    }
+    
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
     cc_id = request.GET.get('centro_costo')
@@ -164,15 +174,7 @@ def exportar_reporte_pdf(request):
         })
     total_general = sum(cc['total_gasto'] for cc in cc_data)
     
-    logo_path = os.path.join(settings.STATIC_ROOT, 'logo.jpg')
-    if os.path.exists(logo_path):
-        logo_url = os.path.join(settings.STATIC_URL, 'logo.jpg')
-    else:
-        logo_url = None
     
-    context = {
-        'logo_url': logo_url,
-    }
     print(f"Ruta del logo: {logo_path}")
     print(f"¿Existe el archivo?: {os.path.exists(logo_path)}")
      
